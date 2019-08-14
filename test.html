@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>My Note</title>
+</head>
+<style>
+  .carousel {
+    position: relative;
+    width: 700px;
+  }
+
+  .carousel-wrapper {
+    position: relative;
+    width: 100%;
+    height: auto;
+    overflow: hidden;
+    background: orange;
+  }
+
+  .carousel-item {
+    position: relative;
+    float: left;
+    border-right: 2px solid #333;
+  }
+
+  .carousel-item>img {
+    display: block;
+  }
+
+  .navi-wrapper {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    bottom: 10px;
+
+  }
+
+  .navi-wrapper>span {
+    width: 10px;
+    height: 10px;
+    border-radius: 10px;
+    background: blue;
+    margin-right: 5px;
+    cursor: pointer;
+    display: inline-block;
+  }
+
+  .navi-wrapper>.navi-on {
+    background: skyblue;
+  }
+</style>
+
+<body>
+  <div class="carousel" data-carousel="lolling" data-navi="dot">
+    <p>안녕하세요 저는 류준호에요</p>
+    <div>가가가가가나나ㅏ나나다다다ㅏ라라라라마마마마</div>
+    <img src="./images/20190808_133759.png">
+    <!--<img src="./images/20190808_133645.png">
+    <img src="./images/20190808_133817.png">
+    <img src="./images/20190808_133836.png">
+    <img src="./images/20190808_133850.png"> -->
+  </div>
+
+
+
+
+
+
+
+  <script src="./carousel.js"></script>
+</body>
+
+</html>
