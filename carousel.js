@@ -1,42 +1,141 @@
+/* 
+  [options]
+  CarouselMotion   : String(default, slide, prev, fade)   - default : default / [slide, prev, fade] support ie 10++, chrome, fireFox.. morden browser
+  naviPosition     : String(top, left, right, bottom)     - default : bottom
+  naviStyle        : String(dot, arrow)                   - default : dot
+  autoMove         : boolen                               - default : false
+  autoMoveTime     : Number                               - default : 3000
+*/
+
 class Carousel {
-  constructor(elements) {
-    this.elements = elements; // element
-    this.carouselType = elements.getAttribute('data-carousel'); // Carousel type
-    this.naviType = elements.getAttribute('data-navi') ? elements.getAttribute('data-navi') : null;
-    this.contentList = [].slice.call(elements.children); // 현재창의 children들을 배열에 담는다.
+  constructor(element, options) {
+    this.element = element; // element
+    this.CarouselMotion = options.CarouselMotion;
+    this.naviPosition = options.naviPosition;
+    this.naviStyle = options.naviStyle;
+    this.autoMove = options.autoMove;
+    this.autoMoveTime = options.autoMoveTime;
+    this.carouselIndex = 0;
+    this.autoMoveReady;
 
+    // default setting
+    this.element.children[0].style.width = `${this.element.clientWidth * this.element.children[0].children.length}px`;
+    for (let i = 0; i < this.element.children[0].children.length; i++) {
+      this.element.children[0].children[i].style.width = `${this.element.clientWidth}px`;
+    };
 
-    this.imageReady = this.contentList.filter((item) => item.getAttribute('src')); // img가 로드 후 Carousel이 시작되야 되기 때문에 tag 구분
-    this.imageReady.length > 0
-      ? this.imageReady[this.imageReady.length - 1].addEventListener('load', () => this._makeCarousel())
-      : this._makeCarousel();
+    // functions
+    this._naviMaker();
+    this._optionSetting();
+    if (this.autoMove) this._autoMoveMouseEvent();
   }
-  _makeCarousel() {  // class handdler
-    if (this.carouselType === 'lolling') {
-      this._insertElement();
+  _naviMaker() {
+    let naviElement = '';
+    if (this.naviStyle === 'arrow') {
+      this.element.children[1].setAttribute('class', 'navi-arrow');
+
+      naviElement += `<div class="navi-arrow-left">Left</div>`;
+      naviElement += `<div class="navi-arrow-right">Right</div>`;
+    } else {
+      for (let i = 0; i < this.element.children[0].children.length; i++) {
+        naviElement += `<span ${i === 0 ? 'class="navi-on"' : ''}></span>`;
+      }
+    }
+
+    this.element.children[1].innerHTML = naviElement;
+
+
+    for (let i = 0; i < this.element.children[1].children.length; i++) {
+      if (this.naviStyle === 'arrow') {
+        this.element.children[1].children[i].onclick = () => {
+          if (this.autoMove) clearInterval(this.autoMoveReady);
+          if (i) this.carouselIndex = this.carouselIndex >= this.element.children[0].children.length - 1 ? 0 : this.carouselIndex + 1;
+          else this.carouselIndex = this.carouselIndex <= 0 ? this.element.children[0].children.length - 1 : this.carouselIndex - 1;
+          this._moveAction(this.carouselIndex);
+        }
+      } else {
+        this.element.children[1].children[i].addEventListener('click', () => { // click event register
+          if (this.autoMove) clearInterval(this.autoMoveReady);
+          this.carouselIndex = i;
+          this._moveAction(i);
+        });
+      }
     }
   }
-
-
-
-
-  _insertElement() {
-    let Content = `<div class="carousel-wrapper">
-                      ${String(this.contentList.map((item) => `<div class="carousel-item">${item.outerHTML}</div>`)).replace(/,/g, '')}
-                    </div>`;
-    let Navi = `<div class="navi-wrapper">
-                  ${String(this.contentList.map((item) => `<span></span>`)).replace(/,/g, '')}
-                </div>`;
-    let wrapperWidth = 0;
-
-
-    this.contentList.forEach((item) => wrapperWidth += item.clientWidth);
-    this.elements.innerHTML = Content + Navi;
-    this.elements.style.overflow = 'hidden';
-    this.elements.children[0].style.width = `${wrapperWidth}px`
-    this.elements.children[1].children[0].setAttribute('class', 'navi-on');
+  _autoMoveMouseEvent() {
+    this.autoMoveReady = setInterval(() => {
+      if (this.carouselIndex >= this.element.children[0].children.length - 1) this.carouselIndex = 0;
+      else this.carouselIndex = this.carouselIndex + 1;
+      this._moveAction(this.carouselIndex);
+    }, this.autoMoveTime);
+    this.element.addEventListener('mouseenter', () => { // mouse over
+      clearInterval(this.autoMoveReady);
+    })
+    this.element.addEventListener('mouseleave', () => { // mouse out
+      this.autoMoveReady = setInterval(() => {
+        if (this.carouselIndex >= this.element.children[0].children.length - 1) this.carouselIndex = 0;
+        else this.carouselIndex = this.carouselIndex + 1;
+        this._moveAction(this.carouselIndex);
+      }, this.autoMoveTime);
+    })
   }
+  _moveAction(index) {
+    if (this.CarouselMotion === 'prev') { // Motion prev
+      if (index === this.element.children[0].children.length - 1) {
+        this.element.children[0].style.transform = `translate(-${(this.element.clientWidth * 0.8) * index - (this.element.clientWidth - this.element.clientWidth * 0.8)}px, 0)`;
+      } else {
+        this.element.children[0].style.transform = `translate(-${(this.element.clientWidth * 0.8) * index}px, 0)`;
+      }
+    } else if (this.CarouselMotion === 'fade') { // Motion default && fade
+      for (let j = 0; j < this.element.children[0].children.length; j++) {
+        if (this.element.children[0].children[index] === this.element.children[0].children[j]) {
+          this.element.children[0].children[index].style.opacity = '1';
+          this.element.children[0].children[index].style.visibility = 'visible';
+        } else {
+          this.element.children[0].children[j].style.opacity = '0';
+          this.element.children[0].children[j].style.visibility = 'hidden';
+        }
+      };
+    } else { // Motion default && slide
+      this.element.children[0].style.transform = `translate(-${this.element.clientWidth * index}px, 0)`;
+    }
 
+    if (this.autoMove && this.naviStyle === 'dot') {
+      for (let j = 0; j < this.element.children[1].children.length; j++) { // navi-wrapper > spans navi-on remove
+        this.element.children[1].children[j].setAttribute('class', '');
+      }
+      this.element.children[1].children[index].setAttribute('class', 'navi-on'); // navi-wrapper > span navi-on add
+    }
+  }
+  _optionSetting() {
+    setTimeout(() => {
+      // CarouselMotion slide || prev || fade => css transition register
+      if (this.CarouselMotion === 'slide' || this.CarouselMotion === 'prev') this.element.children[0].style.transition = '0.4s all'
+
+      if (this.CarouselMotion === 'prev') { // CarouselMotion prev setting
+        this.element.children[0].style.width = `${(this.element.clientWidth * 0.8) * this.element.children[0].children.length}px`;
+        for (let i = 0; i < this.element.children[0].children.length; i++) this.element.children[0].children[i].style.width = `${this.element.clientWidth * 0.8}px`;
+      } else if (this.CarouselMotion === 'fade') { // CarouselMotion fade setting
+        this.element.children[0].style.width = `${this.element.clientWidth}px`;
+        this.element.children[0].style.height = `${this.element.children[0].children[0].clientHeight}px`;
+        for (let i = 0; i < this.element.children[0].children.length; i++) this.element.children[0].children[i].setAttribute('class', 'carousel-item carousel-fade');
+      } else { // CarouselMotion slide || default setting
+
+      }
+      if (this.naviStyle === 'dot' || !this.naviStyle) {
+        if (this.naviPosition === 'top') { // naviPosition Setting
+          this.element.children[1].style.top = '10px';
+        } else if (this.naviPosition === 'left' || this.naviPosition === 'right') {
+          this.naviPosition === 'left' ? this.element.children[1].style.left = '10px' : this.element.children[1].style.right = '10px';
+          this.element.children[1].style.width = '15px';
+          this.element.children[1].style.top = '50%';
+          this.element.children[1].style.marginTop = `- ${this.element.children[1].clientHeight / 2} px`;
+        } else {
+          this.element.children[1].style.bottom = '10px';
+        }
+      }
+    }, 0);
+  }
 }
 
 
@@ -44,64 +143,8 @@ class Carousel {
 
 
 
-document.querySelectorAll('[data-carousel]').forEach((elements) => new Carousel(elements));
- 
- 
- 
 
 
-// function bannerRolling(bannerSelector) {
-//   var crOnMouseOver = false;
-//   var $crArea = $(bannerSelector);
-//   var $bannerArea = $crArea.find('.banner_in');
-//   var $bannerIndicator = $crArea.find('.banner_indicate');
-//   var bannerArrLength = $bannerArea.children().length;
 
-//   for (var iForBA = 1; iForBA < bannerArrLength; iForBA++) {
-//     $bannerIndicator.append('<span></span> ');
-//   }
-//   // 클릭이벤트 추가
-//   $bannerIndicator.find('span').click(function (e) {
-//     var targetIdx = $(e.target).index();
 
-//     $(e.target).siblings().removeClass('on');
-//     $(e.target).addClass('on');
-
-//     $crArea.find('.banner_in').children().removeClass('banner_on');
-//     $($crArea.find('.banner_in').children()[targetIdx]).addClass('banner_on');
-//   });
-
-//   // 출력시 처음 배너를 활성상태로 변경
-//   $bannerArea.find('.banner_item').eq(0).addClass('banner_on');
-
-//   // 자동롤링, 배너가 한개면 안함
-//   if (bannerArrLength > 1) {
-//     setInterval(function () {
-//       // 마우스오버시 자동롤링 안함
-//       if (crOnMouseOver) return; class Carousel {
-
-//       }
-
-//       var $currentBanner = $bannerArea.find('.banner_item.banner_on');
-//       var $currentBannerIndi = $bannerIndicator.find('span.on');
-//       var $nextBanner = $currentBanner.next().length !== 0 ? $currentBanner.next() : $bannerArea.find('.banner_item').eq(0);
-//       var $nextBannerIndi = $currentBannerIndi.next().length !== 0 ? $currentBannerIndi.next() : $bannerIndicator.find('span').eq(0);
-
-//       $currentBanner.removeClass('banner_on');
-//       $currentBannerIndi.removeClass('on');
-//       $nextBanner.addClass('banner_on');
-//       $nextBannerIndi.addClass('on');
-//     }, 3000);
-
-//     // 마우스오버, 아웃 체크
-//     $bannerArea.mouseover(function () {
-//       crOnMouseOver = true;
-//     });
-//     $bannerArea.mouseout(function () {
-//       setTimeout(function () {
-//         crOnMouseOver = false;
-//       }, 3000);
-//     });
-//   }
-// }
 
