@@ -5,109 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>My Note</title>
+  <title>Carousel JS</title>
+  <link href="./carousel.css" rel="stylesheet">
+  <script src="./carousel.min.js"></script>
+
 </head>
 <style>
-  .carousel {
-    position: relative;
+  #carousel-banner {
     width: 800px;
-    overflow: hidden;
-  }
-
-  .carousel>.carousel-wrapper {
-    position: relative;
-    width: 100%;
-    height: auto;
-    overflow: hidden;
-  }
-
-  .carousel>.carousel-wrapper>.carousel-item {
-    position: relative;
-    float: left;
-  }
-
-  .carousel>.carousel-wrapper>.carousel-fade {
-    position: absolute;
-    top: 0;
-    left: 0;
-    transition: 1.0s all;
-  }
-
-  .carousel>.carousel-wrapper>.carousel-item a,
-  .carousel>.carousel-wrapper>.carousel-item img {
-    display: block;
-    width: 100%;
-  }
-
-  .carousel>.navi-wrapper {
-    position: absolute;
-    width: 100%;
-    text-align: center;
-  }
-
-  .carousel>.navi-arrow {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    visibility: hidden;
-  }
-
-  .carousel>.navi-wrapper>span {
-    width: 10px;
-    height: 10px;
-    border: 1px solid #000;
-    border-radius: 10px;
-    background: #fff;
-    margin-right: 5px;
-    cursor: pointer;
-    display: inline-block;
-  }
-
-  .carousel>.navi-wrapper>.navi-on {
-    background: #057CCF;
-  }
-
-  .carousel>.navi-arrow>.navi-arrow-right,
-  .carousel>.navi-arrow>.navi-arrow-left {
-    width: 30px;
-    height: 30px;
-    box-sizing: border-box;
-    position: absolute;
-    top: 50%;
-    margin-top: -15px;
-    font-size: 0;
-    visibility: visible;
-    cursor: pointer;
-  }
-
-  .carousel>.navi-arrow>.navi-arrow-left {
-    left: 3%;
-    transform: rotate(-135deg);
-  }
-
-  .carousel>.navi-arrow>.navi-arrow-right {
-    right: 3%;
-    transform: rotate(45deg);
-  }
-
-  .carousel>.navi-arrow>.navi-arrow-right::before,
-  .carousel>.navi-arrow>.navi-arrow-left::before {
-    content: "";
-    width: 100%;
-    height: 100%;
-    border-width: 3px 3px 0 0;
-    border-style: solid;
-    border-color: #ffffff;
-    transition: 0.2s ease;
-    display: block;
-    transform-origin: 100% 0;
-  }
-
-  .carousel>.navi-arrow>.navi-arrow-right:hover::before,
-  .carousel>.navi-arrow>.navi-arrow-left:hover::before {
-    transform: scale(1.2);
   }
 </style>
 
@@ -115,9 +20,7 @@
   <div class="carousel" id="carousel-banner">
     <div class="carousel-wrapper">
       <div class="carousel-item">
-        <a href="https://www.naver.com" target="_blank">
-          <img src="./images/20190808_133759.png">
-        </a>
+        <img src="./images/20190808_133759.png">
       </div>
       <div class="carousel-item">
         <img src="./images/20190808_133645.png">
@@ -133,20 +36,15 @@
   </div>
 
 
-
-
-  <script src="./carousel.js"></script>
-
   <script>
     new Carousel(document.querySelector('#carousel-banner'), {
-      CarouselMotion: 'fade',
+      CarouselMotion: 'default',
       naviPosition: 'bottom',
-      naviStyle: 'arrow',
+      naviStyle: 'dot',
       autoMove: true,
       autoMoveTime: 2000
     });
   </script>
-
 </body>
 
 </html>

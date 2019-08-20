@@ -1,20 +1,31 @@
-/* 
-  [options]
-  CarouselMotion   : String(default, slide, prev, fade)   - default : default / [slide, prev, fade] support ie 10++, chrome, fireFox.. morden browser
-  naviPosition     : String(top, left, right, bottom)     - default : bottom
-  naviStyle        : String(dot, arrow)                   - default : dot
-  autoMove         : boolen                               - default : false
-  autoMoveTime     : Number                               - default : 3000
+/*
+  [Carousel.js]
+  @params ▼
+    element : element
+    options : {
+      CarouselMotion   : String(default, slide, prev, fade)   
+        - default : default / [slide, prev, fade] support ie 10++, chrome, fireFox.. morden browser
+      naviPosition     : String(top, left, right, bottom)     
+        - default : bottom
+      naviStyle        : String(dot, arrow)                   
+        - default : dot
+      autoMove         : boolen                               
+        - default : false
+      autoMoveTime     : Number                               
+        - default : 3000
+    }
+
+    ***** create by juno *****
 */
 
 class Carousel {
-  constructor(element, options) {
+  constructor(element, options = {}) {
+    this.CarouselMotion = !options.CarouselMotion ? 'default' : options.CarouselMotion;
+    this.naviPosition = !options.naviPosition ? 'bottom' : options.naviPosition;
+    this.naviStyle = !options.naviStyle ? 'dot' : options.naviStyle;
+    this.autoMove = !options.autoMove ? false : options.autoMove;
+    this.autoMoveTime = !options.autoMoveTime ? 3000 : options.autoMoveTime;
     this.element = element; // element
-    this.CarouselMotion = options.CarouselMotion;
-    this.naviPosition = options.naviPosition;
-    this.naviStyle = options.naviStyle;
-    this.autoMove = options.autoMove;
-    this.autoMoveTime = options.autoMoveTime;
     this.carouselIndex = 0;
     this.autoMoveReady;
 
@@ -29,6 +40,7 @@ class Carousel {
     this._optionSetting();
     if (this.autoMove) this._autoMoveMouseEvent();
   }
+
   _naviMaker() {
     let naviElement = '';
     if (this.naviStyle === 'arrow') {
@@ -43,7 +55,6 @@ class Carousel {
     }
 
     this.element.children[1].innerHTML = naviElement;
-
 
     for (let i = 0; i < this.element.children[1].children.length; i++) {
       if (this.naviStyle === 'arrow') {
@@ -62,6 +73,7 @@ class Carousel {
       }
     }
   }
+
   _autoMoveMouseEvent() {
     this.autoMoveReady = setInterval(() => {
       if (this.carouselIndex >= this.element.children[0].children.length - 1) this.carouselIndex = 0;
@@ -79,12 +91,19 @@ class Carousel {
       }, this.autoMoveTime);
     })
   }
+
   _moveAction(index) {
     if (this.CarouselMotion === 'prev') { // Motion prev
       if (index === this.element.children[0].children.length - 1) {
-        this.element.children[0].style.transform = `translate(-${(this.element.clientWidth * 0.8) * index - (this.element.clientWidth - this.element.clientWidth * 0.8)}px, 0)`;
+        this.element.children[0].style['transform'] = `translate(-${(this.element.clientWidth * 0.8) * index - (this.element.clientWidth - this.element.clientWidth * 0.8)}px, 0)`;
+        this.element.children[0].style['msTransform'] = `translate(-${(this.element.clientWidth * 0.8) * index - (this.element.clientWidth - this.element.clientWidth * 0.8)}px, 0)`;
+        this.element.children[0].style['MozTransform'] = `translate(-${(this.element.clientWidth * 0.8) * index - (this.element.clientWidth - this.element.clientWidth * 0.8)}px, 0)`;
+        this.element.children[0].style['WebkitTransform'] = `translate(-${(this.element.clientWidth * 0.8) * index - (this.element.clientWidth - this.element.clientWidth * 0.8)}px, 0)`;
       } else {
-        this.element.children[0].style.transform = `translate(-${(this.element.clientWidth * 0.8) * index}px, 0)`;
+        this.element.children[0].style['transform'] = `translate(-${(this.element.clientWidth * 0.8) * index}px, 0)`;
+        this.element.children[0].style['msTransform'] = `translate(-${(this.element.clientWidth * 0.8) * index}px, 0)`;
+        this.element.children[0].style['MozTransform'] = `translate(-${(this.element.clientWidth * 0.8) * index}px, 0)`;
+        this.element.children[0].style['WebkitTransform'] = `translate(-${(this.element.clientWidth * 0.8) * index}px, 0)`;
       }
     } else if (this.CarouselMotion === 'fade') { // Motion default && fade
       for (let j = 0; j < this.element.children[0].children.length; j++) {
@@ -97,16 +116,20 @@ class Carousel {
         }
       };
     } else { // Motion default && slide
-      this.element.children[0].style.transform = `translate(-${this.element.clientWidth * index}px, 0)`;
+      this.element.children[0].style['transform'] = `translate(-${this.element.clientWidth * index}px, 0)`;
+      this.element.children[0].style['msTransform'] = `translate(-${this.element.clientWidth * index}px, 0)`;
+      this.element.children[0].style['MozTransform'] = `translate(-${this.element.clientWidth * index}px, 0)`;
+      this.element.children[0].style['WebkitTransform'] = `translate(-${this.element.clientWidth * index}px, 0)`;
     }
 
-    if (this.autoMove && this.naviStyle === 'dot') {
+    if (this.naviStyle === 'dot' || !this.naviStyle) {
       for (let j = 0; j < this.element.children[1].children.length; j++) { // navi-wrapper > spans navi-on remove
         this.element.children[1].children[j].setAttribute('class', '');
       }
       this.element.children[1].children[index].setAttribute('class', 'navi-on'); // navi-wrapper > span navi-on add
     }
   }
+
   _optionSetting() {
     setTimeout(() => {
       // CarouselMotion slide || prev || fade => css transition register
@@ -129,13 +152,14 @@ class Carousel {
           this.naviPosition === 'left' ? this.element.children[1].style.left = '10px' : this.element.children[1].style.right = '10px';
           this.element.children[1].style.width = '15px';
           this.element.children[1].style.top = '50%';
-          this.element.children[1].style.marginTop = `- ${this.element.children[1].clientHeight / 2} px`;
+          this.element.children[1].style.marginTop = `-${this.element.children[1].clientHeight / 2}px`;
         } else {
           this.element.children[1].style.bottom = '10px';
         }
       }
     }, 0);
   }
+
 }
 
 
