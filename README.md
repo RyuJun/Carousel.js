@@ -1,7 +1,7 @@
 # Carousel.js
 
 > Carousel.js는 es6++ 문법으로 작성된 Carousel module이다. 
-> slider, fade등의 기능들을 하며, 사이트의 배너 관리를 위하여 제작
+> slider, fade등의 기능들을 지원하며, 사이트의 배너 관리를 위하여 제작
 
 ## 지원
 > chrome, firefox, while 등등의 모던브라우저 및 ie9 버전 이상에서 지원함
