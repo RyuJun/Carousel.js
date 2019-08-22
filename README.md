@@ -1,5 +1,6 @@
 # Carousel.js
-
+[Demo   : https://ryujun.github.io/demos/JavaScript/Carousel/](https://ryujun.github.io/demos/JavaScript/Carousel/)<br>
+[Github : https://github.com/RyuJun/Carousel.js](https://github.com/RyuJun/Carousel.js)
 > Carousel.js는 es6++ 문법으로 작성된 Carousel module이다. 
 > slider, fade등의 기능들을 지원하며, 사이트의 배너 관리를 위하여 제작
 
